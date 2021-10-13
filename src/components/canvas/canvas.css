@@ -1,0 +1,9 @@
+.stage_canvas{
+    width: 20%;
+    border: 1px gray solid;
+    margin: 5%;
+    margin-bottom: 0;
+    }
+    .picker_canvas{
+    margin-left: 5%;
+    }
