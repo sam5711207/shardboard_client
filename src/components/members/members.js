@@ -7,9 +7,9 @@ import { actions } from "../redux/actions/actions";
 function Members() {
   const dispatch = useDispatch();
 
-  const setMembersToStore = (member) => {
-    dispatch(actions.setDisableMember(member.name));
-    dispatch(actions.setLinesDisable(member.name));
+  const setMembersToStore = async(member) => {
+   await dispatch(actions.setDisableMember(member.name));
+   await dispatch(actions.setLinesDisable(member.name));
   };
 
   socketRef.on("newMember", (arrNames) => {

@@ -89,7 +89,7 @@ function Canvas() {
       </select>
       <Stage
         className="stage_canvas"
-        width={120}
+        width={150}
         height={180}
         onMouseDown={handleMouseDown}
         onMousemove={handleMouseMove}
