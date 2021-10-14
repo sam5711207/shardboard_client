@@ -1,37 +1,37 @@
-import produce from 'immer'
-import createReducer from './reducerUtils'
+import produce from "immer";
+import createReducer from "./reducerUtils";
 
 const initalStaste = {
-    name:'',
-    members:[],
-    MemberLines:[]
-}
+  name: "",
+  members: [],
+  MemberLines: [],
+  lines: [],
+  update: true,
+  nameToVisible: "",
+};
 
 const contacts = {
-     setName(state, action) {
-        state.name=action.payload;
-        
-    },
-    setMembers(state, action) {
-        state.members.push(action.payload);
-    },
-    setDisableMember(state, action) {
-        console.log("member",action.payload);
-        state.members.find((member)=>{
-if(member.name===action.payload)
-member.isDisable=! member.isDisable;
-       });
-    },
-    setMemberLines(state, action) {
-    //    if(state.MemberLines.exsit(action.payload))
-    //    {
-    //        state.MemberLines.splice(action.payload)
-    //    }
-    //   else
-    //   state.MemberLines.push(action.payload)
-    },
+  setName(state, action) {
+    state.name = action.payload;
+  },
+  setLines(state, action) {
+    state.lines = action.payload;
+  },
+  setLinesDisable(state, action) {
+    state.update = !state.update;
+    state.nameToVisible = action.payload;
+  },
+  setMembers(state, action) {
+    state.members = action.payload;
+  },
+  setDisableMember(state, action) {
+    state.members.find((member) => {
+      if (member.name === action.payload) member.isDisable = !member.isDisable;
+    });
+  },
+};
 
-}
-
-export default produce((state, action) => createReducer(state, action, contacts), initalStaste);
-
+export default produce(
+  (state, action) => createReducer(state, action, contacts),
+  initalStaste
+);

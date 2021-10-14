@@ -1,104 +1,84 @@
-import React, { useState } from 'react';
-import { TwitterPicker } from 'react-color'
-import {useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { HuePicker } from "react-color";
+import { useSelector } from "react-redux";
 
-import './canvas.css'
+import "./canvas.css";
 
-import { Stage, Layer, Line, Text } from 'react-konva';
+import { Stage, Layer, Line, Text } from "react-konva";
 
-import { socketRef } from '../socket/socket';
+import { socketRef } from "../socket/socket";
 
 function Canvas() {
-  const [tool, setTool] = useState('pen');
-  const [lines, setLines] = useState([]);
+  const [tool, setTool] = useState("pen");
   const [colorPen, setColorPen] = useState("#000000");
-  const isDrawing = React.useRef(false);
   const [shardDraw, setShardDraw] = useState();
-  var lastLine;
-  const name=useSelector((state)=>state.member.name)
-   
+  const [lines, setLines] = useState([]);
 
-  socketRef.on("drawingListener",(lines)=>{
-    setLines(lines)
-    console.log(lines,"lineson");
-    })
+  const isDrawing = React.useRef(false);
+
+  const name = useSelector((state) => state.member.name);
+  const update = useSelector((state) => state.member.update);
+  const nameToVisible = useSelector((state) => state.member.nameToVisible);
+
+  var lastLine;
+
+
+  useEffect(() => {
+    let xlines = lines;
+    xlines.find((line, i) => {
+      if (line.name === nameToVisible) {
+        line.visable = !line.visable;
+        xlines[i].visable = line.visable;
+        setLines(xlines);
+      }
+    });
+  }, [update]);
+
+  socketRef.on("drawingListener", (lines1) => {
+    setLines(lines1);
+  });
 
   const handleMouseDown = (e) => {
     isDrawing.current = true;
     const pos = e.target.getStage().getPointerPosition();
-    console.log("pos",pos);
     setLines([...lines, { tool, points: [pos.x, pos.y] }]);
   };
 
   const handleMouseMove = (e) => {
-      console.log
-      ("dawn")
-    // no drawing - skipping
     if (!isDrawing.current) {
       return;
     }
     const stage = e.target.getStage();
-    console.log(stage, 's')
     const point = stage.getPointerPosition();
-    console.log(point, 'p')
 
     lastLine = lines[lines.length - 1];
     lastLine.color = colorPen;
-    lastLine.name=name;
-    console.log(lastLine, 'll')
+    lastLine.name = name;
 
     // add point
     lastLine.points = lastLine.points.concat([point.x, point.y]);
-    setShardDraw(lastLine.points)
-    console.log("sendDraw");
-    socketRef.emit("sendDraw", lines)
-    
+    lastLine.visable = true;
+    setShardDraw(lastLine.points);
+    socketRef.emit("sendDraw", lines);
     // event
-    console.log(lastLine.points, 'emit')
 
     // replace last
     lines.splice(lines.length - 1, 1, lastLine);
     setLines(lines.concat());
-    console.log(lines, 'lines');
   };
 
   const handleMouseUp = () => {
     isDrawing.current = false;
   };
 
- const handleChangeComplete = (color) => {
-   console.log("ccc", color.hex)
+  const handleChangeComplete = (color) => {
     setColorPen(color.hex);
   };
 
   return (
     <div>
-      <Stage 
-      className="stage_canvas"
-        width={120}
-        height={200}
-        onMouseDown={handleMouseDown}
-        onMousemove={handleMouseMove}
-        onMouseup={handleMouseUp}
-      >
-        <Layer>
-          <Text text="Just start drawing" x={5} y={30} />
-          {lines.map((line, i) => (
-            <Line
-              key={i}
-              points={line.points}
-              stroke={line.color}
-              strokeWidth={5}
-              tension={0.5}
-              lineCap="round"
-              globalCompositeOperation={
-                line.tool === 'eraser' ? 'destination-out' : 'source-over'
-              }
-            />
-          ))}
-        </Layer>
-      </Stage>
-      {/* <select
+      <select
+        className="select_canvas"
         value={tool}
         onChange={(e) => {
           setTool(e.target.value);
@@ -106,12 +86,42 @@ function Canvas() {
       >
         <option value="pen">Pen</option>
         <option value="eraser">Eraser</option>
-      </select> */}
-      <TwitterPicker className="picker_canvas" 
-       color={ colorPen }
-       onChangeComplete={ handleChangeComplete }/>
+      </select>
+      <Stage
+        className="stage_canvas"
+        width={120}
+        height={180}
+        onMouseDown={handleMouseDown}
+        onMousemove={handleMouseMove}
+        onMouseup={handleMouseUp}
+      >
+        <Layer>
+          <Text text="Just start drawing" x={5} y={30} />
+          {lines.map((line, i) => (
+            <>
+              <Line
+                key={i}
+                points={line.points}
+                stroke={line.color}
+                strokeWidth={5}
+                tension={0.5}
+                visible={line.visable}
+                lineCap="round"
+                globalCompositeOperation={
+                  line.tool === "eraser" ? "destination-out" : "source-over"
+                }
+              />
+            </>
+          ))}
+        </Layer>
+      </Stage>
+      <HuePicker
+        className="picker_canvas"
+        color={colorPen}
+        onChangeComplete={handleChangeComplete}
+      />
     </div>
   );
-};
+}
 
-export default Canvas
+export default Canvas;
