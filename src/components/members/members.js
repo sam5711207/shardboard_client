@@ -7,9 +7,9 @@ import { actions } from "../redux/actions/actions";
 function Members() {
   const dispatch = useDispatch();
 
-  const setMembersToStore = async(member) => {
-   await dispatch(actions.setDisableMember(member.name));
-   await dispatch(actions.setLinesDisable(member.name));
+  const setMembersToStore = (member) => {
+    dispatch(actions.setDisableMember(member.name));
+    dispatch(actions.setLinesDisable(member.name));
   };
 
   socketRef.on("newMember", (arrNames) => {
@@ -18,6 +18,7 @@ function Members() {
 
   const members = useSelector((state) => state.member.members);
   const name = useSelector((state) => state.member.name);
+  const memberColor = useSelector((state) => state.member.memberColor);
 
   return (
     <ListGroup as="ul">
@@ -25,28 +26,15 @@ function Members() {
         if (member.name != name) {
           return (
             <div>
-              {" "}
-              {member.isDisable ? (
                 <ListGroup.Item
                   as="li"
-                  style={{ backgroundColor: "gray", cursor: "pointer" }}
+                  style={{ backgroundColor: memberColor, cursor: "pointer" }}
                   onClick={(e) => {
                     setMembersToStore(member);
                   }}
                 >
                   {member.name}
                 </ListGroup.Item>
-              ) : (
-                <ListGroup.Item
-                  as="li"
-                  style={{ backgroundColor: "white", cursor: "pointer" }}
-                  onClick={(e) => {
-                    setMembersToStore(member);
-                  }}
-                >
-                  {member.name}
-                </ListGroup.Item>
-              )}
             </div>
           );
         }

@@ -22,7 +22,6 @@ function Canvas() {
 
   var lastLine;
 
-
   useEffect(() => {
     let xlines = lines;
     xlines.find((line, i) => {
@@ -70,13 +69,19 @@ function Canvas() {
   const handleMouseUp = () => {
     isDrawing.current = false;
   };
+  const handleMouseOut = () => {
+    isDrawing.current = false;
+    // alert("out")
+  };
 
   const handleChangeComplete = (color) => {
     setColorPen(color.hex);
   };
 
   return (
-    <div>
+     <div   
+     onmouseout={handleMouseOut}
+     >
       <select
         className="select_canvas"
         value={tool}
@@ -94,8 +99,10 @@ function Canvas() {
         onMouseDown={handleMouseDown}
         onMousemove={handleMouseMove}
         onMouseup={handleMouseUp}
+        onMouseLeave={handleMouseOut}
       >
-        <Layer>
+        <Layer
+        >
           <Text text="Just start drawing" x={5} y={30} />
           {lines.map((line, i) => (
             <>
@@ -120,6 +127,7 @@ function Canvas() {
         color={colorPen}
         onChangeComplete={handleChangeComplete}
       />
+      <canvas style={{border:"red 5px", width:"20px"}}></canvas>
     </div>
   );
 }

@@ -8,6 +8,7 @@ const initalStaste = {
   lines: [],
   update: true,
   nameToVisible: "",
+  memberColor:""
 };
 
 const contacts = {
@@ -26,8 +27,16 @@ const contacts = {
   },
   setDisableMember(state, action) {
     state.members.find((member) => {
-      if (member.name === action.payload) member.isDisable = !member.isDisable;
-    });
+      if (member.name === action.payload){ 
+        member.isDisable = !member.isDisable;
+      if(member.isDisable){
+      state.memberColor = "gray"
+      }
+     else{
+      state.memberColor = "white"
+     }
+     }
+       } );
   },
 };
 
