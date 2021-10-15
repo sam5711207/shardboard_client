@@ -20,7 +20,7 @@ function Canvas() {
   const update = useSelector((state) => state.member.update);
   const nameToVisible = useSelector((state) => state.member.nameToVisible);
 
-  var lastLine;
+  let lastLine;
 
   useEffect(() => {
     let xlines = lines;
@@ -78,10 +78,12 @@ function Canvas() {
     setColorPen(color.hex);
   };
 
+  const clearLayer = () => {
+    setLines([])
+  }
+
   return (
-     <div   
-     onmouseout={handleMouseOut}
-     >
+     <div>
       <select
         className="select_canvas"
         value={tool}
@@ -92,17 +94,17 @@ function Canvas() {
         <option value="pen">Pen</option>
         <option value="eraser">Eraser</option>
       </select>
+      <button onClick={() => {clearLayer()}}>Clear All</button>
       <Stage
         className="stage_canvas"
-        width={150}
+        width={165}
         height={180}
         onMouseDown={handleMouseDown}
         onMousemove={handleMouseMove}
         onMouseup={handleMouseUp}
         onMouseLeave={handleMouseOut}
       >
-        <Layer
-        >
+        <Layer>
           <Text text="Just start drawing" x={5} y={30} />
           {lines.map((line, i) => (
             <>
